@@ -6,7 +6,7 @@
 /*   By: rkhinchi <rkhinchi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/03 14:59:28 by rkhinchi          #+#    #+#             */
-/*   Updated: 2023/03/06 17:03:10 by rkhinchi         ###   ########.fr       */
+/*   Updated: 2023/03/06 18:39:44 by rkhinchi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ int	main(int argc, char **argv)
 	int	pid;
 
 	pid = 0;
-	if (argc != 3)
+	if (argc != 3 || !ft_str_isdigit(argv[1]))
 	{
 		ft_printf ("Argument is invalid\n");
 		exit (1);
