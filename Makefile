@@ -6,7 +6,7 @@
 #    By: rkhinchi <rkhinchi@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/03/05 18:38:18 by rkhinchi          #+#    #+#              #
-#    Updated: 2023/03/05 19:10:47 by rkhinchi         ###   ########.fr        #
+#    Updated: 2023/03/06 17:03:11 by rkhinchi         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,16 +18,19 @@ SERVER	=	server
 LIBFT		=	./libft/libft.a
 LIBFT_DIR	=	./libft
 
+	# ft_printf Variables #
+FT_PRINTF	=	./ft_printf/libftprintf.a
+FT_PRINTF_DIR	=	./ft_printf
+
 
 	# Mandatory Variables #
 SRC_C	=	client.c
 SRC_S	=	server.c
-INC		=	-I. -I$(LIBFT_DIR) -I$(LIBFT_DIR)/stack \
-			-I$(LIBFT_DIR)/get_next_line
+INC	=	-I. -I$(LIBFT_DIR) -I$(FT_PRINTF_DIR)
 
 	# Compiling Variables #
 CC			=	gcc
-CFLAG		=	-Wall -Wextra -Werror
+CFLAG			=	-Wall -Wextra -Werror
 RM			=	rm -f
 
 	# Colors #
@@ -52,25 +55,30 @@ all: $(SERVER) $(CLIENT)
 
 $(NAME): all
 
-$(SERVER): $(LIBFT)
-	@ $(CC) $(D_FLAG) $(CFLAG) $(SRC_S) $(LIBFT) $(INC) -o $(SERVER)
-	@printf "$(_SUCCESS) server ready.\n"
+$(SERVER): $(LIBFT) $(FT_PRINTF)
+	@ $(CC) $(D_FLAG) $(CFLAG) $(SRC_S) $(LIBFT) $(FT_PRINTF) $(INC) -o $(SERVER)
+	@printf "$(_SUCCESS) server is ready, my boss!\n"
 
-$(CLIENT): $(LIBFT)
-	@ $(CC) $(D_FLAG) $(CFLAG) $(SRC_C) $(LIBFT) $(INC) -o $(CLIENT)
-	@printf "$(_SUCCESS) client ready.\n"
+$(CLIENT): $(LIBFT) $(FT_PRINTF)
+	@ $(CC) $(D_FLAG) $(CFLAG) $(SRC_C) $(LIBFT) $(FT_PRINTF) $(INC) -o $(CLIENT)
+	@printf "$(_SUCCESS) client is ready and waiting for your message to type!\n"
 
 
 $(LIBFT):
-	@ $(MAKE) DEBUG=$(DEBUG) -C ./libft
+	@ $(MAKE) DEBUG=$(DEBUG) -s -C ./libft
+
+$(FT_PRINTF):
+	@ $(MAKE) DEBUG=$(DEBUG) -s -C ./ft_printf
 
 clean:
-	@ $(RM) $(CLIENT) $(SERVER)
-	@printf "$(_INFO) client removed.\n"
-	@printf "$(_INFO) server removed.\n"
+	@ $(MAKE) clean -s -C $(LIBFT_DIR)
+	@ $(MAKE) clean -s -C $(FT_PRINTF_DIR)
+	@printf "$(_INFO) libft objects removed.\n"
+	@printf "$(_INFO) ft_printf objects removed.\n"
 
 fclean:
-	@ $(MAKE) fclean -C $(LIBFT_DIR)
+	@ $(MAKE) fclean -s -C $(LIBFT_DIR)
+	@ $(MAKE) fclean -s -C $(FT_PRINTF_DIR)
 	@ $(RM) $(CLIENT) $(SERVER)
 	@printf "$(_INFO) client removed.\n"
 	@printf "$(_INFO) server removed.\n"

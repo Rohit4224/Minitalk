@@ -6,32 +6,44 @@
 /*   By: rkhinchi <rkhinchi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/03 14:59:28 by rkhinchi          #+#    #+#             */
-/*   Updated: 2023/03/05 19:21:21 by rkhinchi         ###   ########.fr       */
+/*   Updated: 2023/03/06 17:03:10 by rkhinchi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Minitalk.h"
+
+int	g_server_ready = 1;
+
+void	ft_received_bit(int signal)
+{
+	(void)signal;
+	g_server_ready = 0;
+}
 
 void	bit_by_bit(int pid, char c)
 {
 	int	i;
 	int	bit_value;
 
+	signal(SIGUSR1, ft_received_bit);
 	i = 7;
-	bit_value = (c >> i & 1);
 	while (i >= 0)
 	{
+		bit_value = (c >> i & 1);
+		g_server_ready = 1;
 		if (bit_value)
 		{
 			if (kill(pid, SIGUSR2) == -1)
 				exit(1);
-			else
-			{
-				if (kill(pid, SIGUSR1) == -1)
-					exit(1);
-			}
-			usleep(50);
 		}
+		else
+		{
+			if (kill(pid, SIGUSR1) == -1)
+				exit(1);
+		}
+		while (g_server_ready)
+			;
+		i--;
 	}
 }
 
@@ -46,16 +58,14 @@ void	pass_str(int pid, char *str)
 		i++;
 	}
 	bit_by_bit(pid, '\n');
-	if (str[i] == '\0')
-	{
-		i = 0;
-		while (i < 8)
-		{
-			kill(pid, SIGUSR1);
-			return (0);
-		}
-		return (1);
-	}
+	bit_by_bit(pid, 0);
+}
+
+void	actor(int signal)
+{
+	(void)signal;
+	ft_printf("Message has been received! VOILA!!\n");
+	exit(0);
 }
 
 int	main(int argc, char **argv)
@@ -63,12 +73,11 @@ int	main(int argc, char **argv)
 	int	pid;
 
 	pid = 0;
-	if (argc != 3 || ft_numeric(argv[1] == 0))
+	if (argc != 3)
 	{
-		printf ("Argument is invalid");
+		ft_printf ("Argument is invalid\n");
 		exit (1);
 	}
-	signal(SIGUSR1, actor);
 	signal(SIGUSR2, actor);
 	pid = ft_atoi(argv[1]);
 	pass_str(pid, argv[2]);
